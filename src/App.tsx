@@ -50,6 +50,22 @@ export default function App() {
     });
   }
 
+  function removeWayPoint(id: string) {
+    setWayPoints((prev) => {
+      const newWayPoints = prev.filter((s) => s.id != id);
+
+      return newWayPoints;
+    });
+  }
+
+  function updateWaypoints(id: string, updatedAdress: string) {
+    const newWayPoints = wayPoints.map((w) => {
+      return w.id == id ? { ...w, adress: updatedAdress } : w;
+    });
+
+    setWayPoints(newWayPoints);
+  }
+
   function clearRoute() {
     setDirectionsResponse(undefined);
     setDistance('');
@@ -57,6 +73,8 @@ export default function App() {
     setOrigin('');
     setDestination('');
   }
+
+  console.log(wayPoints);
 
   return (
     <div className='grid grid-cols-[350px,1fr]'>
@@ -101,7 +119,12 @@ export default function App() {
               Add stop
             </button>
             {wayPoints.map((el) => (
-              <WayPoint key={el.id} {...el} />
+              <WayPoint
+                key={el.id}
+                onRemoveWayPoint={removeWayPoint}
+                onUpdateWayPoints={updateWaypoints}
+                {...el}
+              />
             ))}
           </div>
 
