@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Loader from './components/ui/Loader';
 import Sidebar from './components/Sidebar';
 import MapComponent from './components/MapComponent';
+import { Toaster } from 'react-hot-toast';
 
 const libs: LoadScriptProps['libraries'] = ['places'];
 
@@ -24,9 +25,32 @@ export default function App() {
   }
 
   return (
-    <div className='flex flex-col px-2 lg:px-0 lg:grid lg:grid-cols-[350px,1fr]'>
-      <Sidebar setDirectionsResponse={setDirectionsResponse} />
-      <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
-    </div>
+    <>
+      <div className='flex flex-col px-2 lg:px-0 lg:grid lg:grid-cols-[450px,1fr]'>
+        <Sidebar setDirectionsResponse={setDirectionsResponse} />
+        <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
+      </div>
+
+      <Toaster
+        position='top-center'
+        gutter={12}
+        containerStyle={{ margin: '8px' }}
+        toastOptions={{
+          success: {
+            duration: 3000,
+          },
+          error: {
+            duration: 5000,
+          },
+          style: {
+            fontSize: '16px',
+            maxWidth: '500px',
+            padding: '16px 24px',
+            backgroundColor: '#09090b',
+            color: '#fff',
+          },
+        }}
+      />
+    </>
   );
 }

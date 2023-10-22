@@ -69,7 +69,7 @@ const Sidebar = ({
     return waypoints.map((w) => w.adress);
   }
   return (
-    <aside className='p-4 bg-zinc-950 shadow-lg '>
+    <aside className='p-4 bg-zinc-950 shadow-lg max-h-screen overflow-y-scroll'>
       <Heading />
       <div className='flex flex-col space-between gap-2'>
         <div className='w-full flex flex-col gap-2 mb-2'>
@@ -81,7 +81,7 @@ const Sidebar = ({
             handleSetState={setOrigin}
           />
         </div>
-        <div className='w-full flex flex-col gap-2 mb-5'>
+        <div className='w-full flex flex-col gap-2 mb-4 lg:mb-5 '>
           <Input
             type='auto-complete'
             id='destination'
@@ -91,7 +91,7 @@ const Sidebar = ({
           />
         </div>
 
-        <div className='w-full flex flex-col gap-2 mb-7 lg:mb-10'>
+        <div className='w-full flex flex-col gap-2 mb-6 lg:mb-10'>
           <ActionButton
             disabled={origin == '' || destination == ''}
             handleClick={addWayPoint}

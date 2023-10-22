@@ -20,7 +20,7 @@ const WayPoint = ({
   }
 
   return (
-    <div className='relative w-full'>
+    <div className='relative w-full mb-2'>
       <Autocomplete
         className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
         apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}

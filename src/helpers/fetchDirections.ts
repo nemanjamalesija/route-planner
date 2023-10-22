@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { getGeocode, getLatLng } from 'use-places-autocomplete';
 
 export default async function fetchDirections(
@@ -55,7 +56,9 @@ export default async function fetchDirections(
     setDistance(distance);
     setDuration(duration);
   } catch (error) {
-    alert(`No route could be found between ${origin} and ${destination}.`);
+    toast.error(
+      `No route could be found between ${origin} and ${destination}.`
+    );
   }
 
   return;
