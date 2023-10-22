@@ -1,9 +1,10 @@
 import { useJsApiLoader, LoadScriptProps } from '@react-google-maps/api';
 import { useState } from 'react';
-import Loader from './components/Loader';
+
 import fetchDirections from './helpers/fetchDirections';
 import { FaTimes } from 'react-icons/fa';
 import { HiMiniMapPin } from 'react-icons/hi2';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   GoogleMap,
@@ -11,6 +12,7 @@ import {
   Autocomplete,
   DirectionsRenderer,
 } from '@react-google-maps/api';
+import Loader from './components/Loader';
 
 const libs: LoadScriptProps['libraries'] = ['places'];
 const center = { lat: 42.43044, lng: 19.2594 };
@@ -26,7 +28,9 @@ export default function App() {
   const [destination, setDestination] = useState<string>('');
   const [distance, setDistance] = useState<string>('');
   const [duration, setDuration] = useState<string>('');
-  const [stops, setStops] = useState<{ id: string }[]>([]);
+  const [travelMode, setTravelMode] = useState<'DRIVING' | 'WALKING'>(
+    'DRIVING'
+  );
 
   const [, setMap] = useState<google.maps.Map | undefined>(undefined);
   const [directionsResponse, setDirectionsResponse] = useState<
@@ -37,9 +41,17 @@ export default function App() {
     return <Loader />;
   }
 
+  function clearRoute() {
+    setDirectionsResponse(undefined);
+    setDistance('');
+    setDuration('');
+    setOrigin('');
+    setDestination('');
+  }
+
   return (
     <div className='grid grid-cols-[350px,1fr]'>
-      <aside className='p-4 bg-zinc-950 shadow-lg '>
+      <div className='p-4 bg-zinc-950 shadow-lg '>
         <h1 className='text-white text-2xl font-semibold text-center mb-6 flex items-center justify-center gap-2'>
           <HiMiniMapPin color='#10b981' size='32px' />
 
@@ -71,6 +83,20 @@ export default function App() {
             </Autocomplete>
           </div>
 
+          <div className='flex gap-2 items-center mb-4'>
+            <select
+              id='travelMode'
+              className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full cursor-pointer'
+              value={travelMode}
+              onChange={(e) =>
+                setTravelMode(e.target.value as 'DRIVING' | 'WALKING')
+              }
+            >
+              <option value='DRIVING'>Driving 🚗</option>
+              <option value='WALKING'>Walking 🚶‍♂️</option>
+            </select>
+          </div>
+
           <div className='flex items-center gap-2'>
             <button
               className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:cursor-not-allowed'
@@ -79,7 +105,7 @@ export default function App() {
                 fetchDirections(
                   origin,
                   destination,
-                  'DRIVING',
+                  travelMode,
                   setDirectionsResponse,
                   setDistance,
                   setDuration
@@ -87,6 +113,9 @@ export default function App() {
               }
             >
               Calculate Route
+            </button>
+            <button aria-label='center back' onClick={clearRoute}>
+              <FaTimes color='#ef4444' size='32px' />
             </button>
           </div>
         </div>
@@ -100,7 +129,7 @@ export default function App() {
             </p>
           </div>
         )}
-      </aside>
+      </div>
 
       <div className=' h-screen w-full'>
         {/* Google Map Box */}
