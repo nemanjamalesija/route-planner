@@ -1,22 +1,16 @@
 import { useJsApiLoader, LoadScriptProps } from '@react-google-maps/api';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import fetchDirections from './helpers/fetchDirections';
 import { FaTimes } from 'react-icons/fa';
 import { HiMiniMapPin } from 'react-icons/hi2';
 import { v4 as uuidv4 } from 'uuid';
-
-import {
-  GoogleMap,
-  Marker,
-  Autocomplete,
-  DirectionsRenderer,
-} from '@react-google-maps/api';
-import Loader from './components/Loader';
+import Autocomplete from 'react-google-autocomplete';
+import { GoogleMap, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import WayPoint from './components/WayPoint';
+import Loader from './components/ui/Loader';
 
 const libs: LoadScriptProps['libraries'] = ['places'];
 const center = { lat: 42.43044, lng: 19.2594 };
-
 const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 export default function App() {
@@ -24,25 +18,23 @@ export default function App() {
     googleMapsApiKey: googleMapsKey,
     libraries: libs,
   });
-  const [origin, setOrigin] = useState<string>('');
-  const [destination, setDestination] = useState<string>('');
+
+  const originRef = useRef<HTMLInputElement | null>(null);
+  const destinationRef = useRef<HTMLInputElement | null>(null);
+
   const [distance, setDistance] = useState<string>('');
   const [duration, setDuration] = useState<string>('');
   const [wayPoints, setWayPoints] = useState<{ id: string; adress: string }[]>(
     []
   );
+
   const [travelMode, setTravelMode] = useState<'DRIVING' | 'WALKING'>(
     'DRIVING'
   );
-
   const [, setMap] = useState<google.maps.Map | undefined>(undefined);
   const [directionsResponse, setDirectionsResponse] = useState<
     google.maps.DirectionsResult | undefined
   >(undefined);
-
-  if (!isLoaded) {
-    return <Loader />;
-  }
 
   function addWayPoint() {
     setWayPoints((prev) => {
@@ -66,13 +58,22 @@ export default function App() {
     setWayPoints(newWayPoints);
   }
 
+  function getWayPointsAdresses(waypoints: typeof wayPoints) {
+    return waypoints.map((w) => w.adress);
+  }
+
   function clearRoute() {
     setDirectionsResponse(undefined);
     setDistance('');
     setDuration('');
-    setOrigin('');
-    setDestination('');
+
+    if (originRef.current && destinationRef.current) {
+      originRef.current.value = '';
+      destinationRef.current.value = '';
+    }
   }
+
+  if (!isLoaded) return <Loader />;
 
   console.log(wayPoints);
 
@@ -86,34 +87,23 @@ export default function App() {
         </h1>
         <div className='flex flex-col space-between gap-2'>
           <div className='w-full flex flex-col gap-2 mb-4'>
-            <Autocomplete>
-              <input
-                id='origin'
-                className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
-                type='text'
-                placeholder='Start location'
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-              />
-            </Autocomplete>
+            <Autocomplete
+              placeholder='Enter starting location'
+              className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+              ref={originRef}
+            />
           </div>
           <div className='w-full flex flex-col gap-2 mb-4'>
-            <Autocomplete>
-              <input
-                id='destination'
-                className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
-                type='text'
-                placeholder='Destination'
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-              />
-            </Autocomplete>
+            <Autocomplete
+              placeholder='Enter destination'
+              className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+              ref={destinationRef}
+            />
           </div>
 
           <div className='w-full flex flex-col gap-2 mb-4'>
             <button
               className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed mb-1'
-              disabled={origin == '' || destination == ''}
               onClick={addWayPoint}
             >
               Add stop
@@ -146,11 +136,11 @@ export default function App() {
             <button
               className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed'
               type='submit'
-              disabled={origin == '' || destination == ''}
               onClick={() =>
                 fetchDirections(
-                  origin,
-                  destination,
+                  originRef.current?.value as string,
+                  destinationRef.current?.value as string,
+                  getWayPointsAdresses(wayPoints),
                   travelMode,
                   setDirectionsResponse,
                   setDistance,
@@ -160,8 +150,12 @@ export default function App() {
             >
               Calculate Route
             </button>
-            <button aria-label='center back' onClick={clearRoute}>
-              <FaTimes color='#ef4444' size='32px' />
+            <button
+              className='disabled:cursor-not-allowed'
+              aria-label='center back'
+              onClick={clearRoute}
+            >
+              <FaTimes color={'#ef4444'} size='32px' />
             </button>
           </div>
         </div>

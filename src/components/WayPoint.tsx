@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import { Autocomplete } from '@react-google-maps/api';
+import Autocomplete from 'react-google-autocomplete';
 
 type WayPointProps = {
   id: string;
@@ -13,22 +13,22 @@ const WayPoint = ({
   onRemoveWayPoint,
   onUpdateWayPoints,
 }: WayPointProps) => {
-  const [wayPoint, setWatPoint] = useState<string>('');
+  const wayPoint = useRef<HTMLInputElement | null>(null);
+
+  function handleUpdateWaypoints(id: string, adress: string) {
+    onUpdateWayPoints(id, adress);
+  }
 
   return (
     <div className='relative w-full'>
-      <Autocomplete>
-        <input
-          id='wayPoint'
-          className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
-          type='text'
-          placeholder='Stop location'
-          value={wayPoint}
-          onChange={(e) => {
-            setWatPoint(e.target.value), onUpdateWayPoints(id, e.target.value);
-          }}
-        />
-      </Autocomplete>
+      <Autocomplete
+        className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+        apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
+        ref={wayPoint}
+        onPlaceSelected={(place) => {
+          handleUpdateWaypoints(id, place.formatted_address as string);
+        }}
+      />
       <button aria-label='center back' className='absolute top-4 right-2'>
         <FaTimes
           color='#020617'
