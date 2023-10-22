@@ -35,6 +35,13 @@ const Sidebar = ({
     setDuration('');
     setOrigin('');
     setDestination('');
+
+    if (originRef.current && destinationRef.current) {
+      originRef.current.value = '';
+      destinationRef.current.value = '';
+    }
+
+    setWayPoints([]);
   }
 
   function addWayPoint() {
@@ -84,7 +91,7 @@ const Sidebar = ({
           />
         </div>
 
-        <div className='w-full flex flex-col gap-2 mb-10'>
+        <div className='w-full flex flex-col gap-2 mb-7 lg:mb-10'>
           <ActionButton
             disabled={origin == '' || destination == ''}
             handleClick={addWayPoint}

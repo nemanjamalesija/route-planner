@@ -24,12 +24,9 @@ export default function App() {
   }
 
   return (
-    <div className='grid grid-cols-[350px,1fr]'>
+    <div className='flex flex-col px-2 lg:px-0 lg:grid lg:grid-cols-[350px,1fr]'>
       <Sidebar setDirectionsResponse={setDirectionsResponse} />
-      <MapComponent
-        directionsResponse={directionsResponse}
-        setMap={setMap}
-      />
+      <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
     </div>
   );
 }
