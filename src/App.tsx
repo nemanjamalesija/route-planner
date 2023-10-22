@@ -5,7 +5,6 @@ import fetchDirections from './helpers/fetchDirections';
 import { FaTimes } from 'react-icons/fa';
 import { HiMiniMapPin } from 'react-icons/hi2';
 
-
 import {
   GoogleMap,
   Marker,
@@ -28,7 +27,6 @@ export default function App() {
   const [distance, setDistance] = useState<string>('');
   const [duration, setDuration] = useState<string>('');
   const [stops, setStops] = useState<{ id: string }[]>([]);
-  const [travelMode, setTravelMode] = useState<string>('DRIVING');
 
   const [, setMap] = useState<google.maps.Map | undefined>(undefined);
   const [directionsResponse, setDirectionsResponse] = useState<
@@ -39,17 +37,71 @@ export default function App() {
     return <Loader />;
   }
 
-  fetchDirections(
-    'Podgorica',
-    'Budva',
-    'DRIVING',
-    setDirectionsResponse,
-    setOrigin,
-    setDestination
-  );
-
   return (
-    <div className='h-screen'>
+    <div className='grid grid-cols-[350px,1fr]'>
+      <aside className='p-4 bg-zinc-950 shadow-lg '>
+        <h1 className='text-white text-2xl font-semibold text-center mb-6 flex items-center justify-center gap-2'>
+          <HiMiniMapPin color='#10b981' size='32px' />
+
+          <span>Route planner</span>
+        </h1>
+        <div className='flex flex-col space-between gap-2'>
+          <div className='w-full flex flex-col gap-2 mb-4'>
+            <Autocomplete>
+              <input
+                id='origin'
+                className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+                type='text'
+                placeholder='Start location'
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+              />
+            </Autocomplete>
+          </div>
+          <div className='w-full flex flex-col gap-2 mb-4'>
+            <Autocomplete>
+              <input
+                id='destination'
+                className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-500 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+                type='text'
+                placeholder='Destination'
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+              />
+            </Autocomplete>
+          </div>
+
+          <div className='flex items-center gap-2'>
+            <button
+              className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:cursor-not-allowed'
+              type='submit'
+              onClick={() =>
+                fetchDirections(
+                  origin,
+                  destination,
+                  'DRIVING',
+                  setDirectionsResponse,
+                  setDistance,
+                  setDuration
+                )
+              }
+            >
+              Calculate Route
+            </button>
+          </div>
+        </div>
+        {distance && duration && (
+          <div className='gap-2 flex flex-col mt-8'>
+            <p className='text-base text-white'>
+              Distance to your location: {distance}
+            </p>
+            <p className='text-base text-white'>
+              Estimated travel duration: {duration}
+            </p>
+          </div>
+        )}
+      </aside>
+
       <div className=' h-screen w-full'>
         {/* Google Map Box */}
         <GoogleMap
