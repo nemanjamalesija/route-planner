@@ -25,11 +25,12 @@ export default async function fetchDirections(
   const directionsWaypoints: google.maps.DirectionsWaypoint[] = waypoints.map(
     (waypoint) => ({
       location: waypoint,
-      stopover: true, // or false, depending on whether you want to stop at the waypoint
+      stopover: true,
     })
   );
 
   const directionsService = new google.maps.DirectionsService();
+
   const results = await directionsService.route({
     origin: originLocation,
     destination: destinationLocation,
@@ -45,7 +46,7 @@ export default async function fetchDirections(
   if (!distance || !duration) return;
 
   console.log(results);
-  console.log(distance, duration);
+
   setDirectionsResponse(results);
   setDistance(distance);
   setDuration(duration);

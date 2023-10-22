@@ -5,12 +5,11 @@ import { FaTimes } from 'react-icons/fa';
 import { HiMiniMapPin } from 'react-icons/hi2';
 import { v4 as uuidv4 } from 'uuid';
 import Autocomplete from 'react-google-autocomplete';
-import { GoogleMap, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import WayPoint from './components/WayPoint';
 import Loader from './components/ui/Loader';
+import MapComponent from './components/MapComponent';
 
 const libs: LoadScriptProps['libraries'] = ['places'];
-const center = { lat: 42.43044, lng: 19.2594 };
 const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 export default function App() {
@@ -22,6 +21,8 @@ export default function App() {
   const originRef = useRef<HTMLInputElement | null>(null);
   const destinationRef = useRef<HTMLInputElement | null>(null);
 
+  const [origin, setOrigin] = useState<string>('');
+  const [destination, setDestination] = useState<string>('');
   const [distance, setDistance] = useState<string>('');
   const [duration, setDuration] = useState<string>('');
   const [wayPoints, setWayPoints] = useState<{ id: string; adress: string }[]>(
@@ -66,16 +67,11 @@ export default function App() {
     setDirectionsResponse(undefined);
     setDistance('');
     setDuration('');
-
-    if (originRef.current && destinationRef.current) {
-      originRef.current.value = '';
-      destinationRef.current.value = '';
-    }
   }
 
-  if (!isLoaded) return <Loader />;
-
-  console.log(wayPoints);
+  if (!isLoaded) {
+    return <Loader />;
+  }
 
   return (
     <div className='grid grid-cols-[350px,1fr]'>
@@ -88,22 +84,31 @@ export default function App() {
         <div className='flex flex-col space-between gap-2'>
           <div className='w-full flex flex-col gap-2 mb-4'>
             <Autocomplete
+              apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
               placeholder='Enter starting location'
               className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
               ref={originRef}
+              onPlaceSelected={(place) => {
+                setOrigin(place.formatted_address as string);
+              }}
             />
           </div>
           <div className='w-full flex flex-col gap-2 mb-4'>
             <Autocomplete
+              apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
               placeholder='Enter destination'
               className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
               ref={destinationRef}
+              onPlaceSelected={(place) => {
+                setDestination(place.formatted_address as string);
+              }}
             />
           </div>
 
           <div className='w-full flex flex-col gap-2 mb-4'>
             <button
               className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed mb-1'
+              disabled={origin == '' || destination == ''}
               onClick={addWayPoint}
             >
               Add stop
@@ -136,17 +141,18 @@ export default function App() {
             <button
               className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed'
               type='submit'
-              onClick={() =>
+              disabled={origin == '' || destination == ''}
+              onClick={() => {
                 fetchDirections(
-                  originRef.current?.value as string,
-                  destinationRef.current?.value as string,
+                  origin,
+                  destination,
                   getWayPointsAdresses(wayPoints),
                   travelMode,
                   setDirectionsResponse,
                   setDistance,
                   setDuration
-                )
-              }
+                );
+              }}
             >
               Calculate Route
             </button>
@@ -154,8 +160,14 @@ export default function App() {
               className='disabled:cursor-not-allowed'
               aria-label='center back'
               onClick={clearRoute}
+              disabled={origin == '' || destination == ''}
             >
-              <FaTimes color={'#ef4444'} size='32px' />
+              <FaTimes
+                color={
+                  origin == '' || destination == '' ? '#a8a29e' : '#ef4444'
+                }
+                size='32px'
+              />
             </button>
           </div>
         </div>
@@ -170,30 +182,7 @@ export default function App() {
           </div>
         )}
       </div>
-
-      <div className=' h-screen w-full'>
-        {/* Google Map Box */}
-        <GoogleMap
-          center={center}
-          zoom={15}
-          mapContainerStyle={{ width: '100%', height: '100%' }}
-          options={{
-            zoomControl: false,
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: false,
-          }}
-          onLoad={(map) => setMap(map)}
-        >
-          <Marker
-            position={center}
-            animation={window.google.maps.Animation.BOUNCE}
-          />
-          {directionsResponse && (
-            <DirectionsRenderer directions={directionsResponse} />
-          )}
-        </GoogleMap>
-      </div>
+      <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
     </div>
   );
 }
