@@ -30,7 +30,7 @@ export default function App() {
       <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
 
       <Toaster
-        position='top-center'
+        position='top-right'
         gutter={12}
         containerStyle={{ margin: '8px' }}
         toastOptions={{
