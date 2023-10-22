@@ -1,11 +1,12 @@
 import DistanceDurationInfo from './DistanceDurationInfo';
-import Autocomplete from 'react-google-autocomplete';
-import { FaTimes } from 'react-icons/fa';
 import WayPoint from './WayPoint';
 import fetchDirections from '../helpers/fetchDirections';
-import { HiMiniMapPin } from 'react-icons/hi2';
 import { useState, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import Heading from './ui/Heading';
+import ActionButton from './ui/ActionButton';
+import Input from './ui/Input';
+import ClearButton from './ui/ClearButton';
 
 const Sidebar = ({
   setDirectionsResponse,
@@ -45,7 +46,6 @@ const Sidebar = ({
   function removeWayPoint(id: string) {
     setWayPoints((prev) => {
       const newWayPoints = prev.filter((s) => s.id != id);
-
       return newWayPoints;
     });
   }
@@ -63,43 +63,34 @@ const Sidebar = ({
   }
   return (
     <aside className='p-4 bg-zinc-950 shadow-lg '>
-      <h1 className='text-white text-2xl font-semibold text-center mb-6 flex items-center justify-center gap-2'>
-        <HiMiniMapPin color='#10b981' size='32px' />
-
-        <span>Route planner</span>
-      </h1>
+      <Heading />
       <div className='flex flex-col space-between gap-2'>
-        <div className='w-full flex flex-col gap-2 mb-4'>
-          <Autocomplete
-            apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
-            placeholder='Enter starting location'
-            className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+        <div className='w-full flex flex-col gap-2 mb-2'>
+          <Input
+            type='auto-complete'
+            id='origin'
+            placeholder='Starting point'
             ref={originRef}
-            onPlaceSelected={(place) => {
-              setOrigin(place.formatted_address as string);
-            }}
+            handleSetState={setOrigin}
           />
         </div>
-        <div className='w-full flex flex-col gap-2 mb-4'>
-          <Autocomplete
-            apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
-            placeholder='Enter destination'
-            className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full'
+        <div className='w-full flex flex-col gap-2 mb-5'>
+          <Input
+            type='auto-complete'
+            id='destination'
+            placeholder='Destination'
             ref={destinationRef}
-            onPlaceSelected={(place) => {
-              setDestination(place.formatted_address as string);
-            }}
+            handleSetState={setDestination}
           />
         </div>
 
-        <div className='w-full flex flex-col gap-2 mb-4'>
-          <button
-            className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed mb-1'
+        <div className='w-full flex flex-col gap-2 mb-10'>
+          <ActionButton
             disabled={origin == '' || destination == ''}
-            onClick={addWayPoint}
+            handleClick={addWayPoint}
           >
             Add stop
-          </button>
+          </ActionButton>
           {wayPoints.map((el) => (
             <WayPoint
               key={el.id}
@@ -111,25 +102,19 @@ const Sidebar = ({
         </div>
 
         <div className='flex gap-2 items-center mb-4'>
-          <select
+          <Input
+            type='select'
             id='travelMode'
-            className='rounded-md border border-stone-200 px-4 py-2 text-sm transition-all duration-400 placeholder:text-stone-400 focus:outline-none focus:ring focus:ring-emerald-500 md:px-6 md:py-3 w-full cursor-pointer'
+            placeholder='Travel mode'
             value={travelMode}
-            onChange={(e) =>
-              setTravelMode(e.target.value as 'DRIVING' | 'WALKING')
-            }
-          >
-            <option value='DRIVING'>Driving 🚗</option>
-            <option value='WALKING'>Walking 🚶‍♂️</option>
-          </select>
+            handleOnChange={setTravelMode}
+          />
         </div>
 
         <div className='flex items-center gap-2'>
-          <button
-            className='px-4 py-3 md:px-6 md:py-4inline-block text-sm rounded-full bg-emerald-500 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-400 hover:bg-emerald-400 focus:bg-emerald-400 focus:outline-none focus:ring focus:ring-emerald-400 focus:ring-offset-2 disabled:bg-stone-400 disabled:cursor-not-allowed'
-            type='submit'
+          <ActionButton
             disabled={origin == '' || destination == ''}
-            onClick={() => {
+            handleClick={() => {
               fetchDirections(
                 origin,
                 destination,
@@ -142,18 +127,11 @@ const Sidebar = ({
             }}
           >
             Calculate Route
-          </button>
-          <button
-            className='disabled:cursor-not-allowed'
-            aria-label='center back'
-            onClick={clearRoute}
+          </ActionButton>
+          <ClearButton
+            onClear={clearRoute}
             disabled={origin == '' || destination == ''}
-          >
-            <FaTimes
-              color={origin == '' || destination == '' ? '#a8a29e' : '#ef4444'}
-              size='32px'
-            />
-          </button>
+          />
         </div>
       </div>
       {distance && duration && (

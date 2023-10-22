@@ -11,7 +11,7 @@ const MapComponent = ({ directionsResponse, setMap }: MapComponentProps) => {
     <div className=' h-screen w-full'>
       <GoogleMap
         center={center}
-        zoom={15}
+        zoom={6}
         mapContainerStyle={{ width: '100%', height: '100%' }}
         options={{
           zoomControl: false,
