@@ -15,6 +15,7 @@ const WayPoint = ({
 }: WayPointProps) => {
   const wayPoint = useRef<HTMLInputElement | null>(null);
 
+  // Updates waypoints in the <Sidebar />
   function handleUpdateWaypoints(id: string, adress: string) {
     onUpdateWayPoints(id, adress);
   }

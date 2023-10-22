@@ -25,11 +25,9 @@ export default function App() {
   }
 
   return (
-    <>
-      <div className='flex flex-col px-2 lg:px-0 lg:grid lg:grid-cols-[450px,1fr]'>
-        <Sidebar setDirectionsResponse={setDirectionsResponse} />
-        <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
-      </div>
+    <div className='flex flex-col px-2 lg:px-0 lg:grid lg:grid-cols-[450px,1fr]'>
+      <Sidebar setDirectionsResponse={setDirectionsResponse} />
+      <MapComponent directionsResponse={directionsResponse} setMap={setMap} />
 
       <Toaster
         position='top-center'
@@ -51,6 +49,6 @@ export default function App() {
           },
         }}
       />
-    </>
+    </div>
   );
 }

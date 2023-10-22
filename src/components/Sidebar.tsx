@@ -57,6 +57,8 @@ const Sidebar = ({
     });
   }
 
+  // Update waypoint
+  // account for the case when there are multiple waypoints
   function updateWaypoints(id: string, updatedAdress: string) {
     const newWayPoints = wayPoints.map((w) => {
       return w.id == id ? { ...w, adress: updatedAdress } : w;
@@ -65,6 +67,8 @@ const Sidebar = ({
     setWayPoints(newWayPoints);
   }
 
+  // Waypoint is of type {id: string, adress: string}
+  // so we need to extract the adresses in order to get the coords
   function getWayPointsAdresses(waypoints: typeof wayPoints) {
     return waypoints.map((w) => w.adress);
   }
@@ -73,6 +77,7 @@ const Sidebar = ({
       <Heading />
       <div className='flex flex-col space-between gap-2'>
         <div className='w-full flex flex-col gap-2 mb-2'>
+          {/* Origin input */}
           <Input
             type='auto-complete'
             id='origin'
@@ -82,6 +87,7 @@ const Sidebar = ({
           />
         </div>
         <div className='w-full flex flex-col gap-2 mb-4 lg:mb-5 '>
+          {/* Destination input */}
           <Input
             type='auto-complete'
             id='destination'
@@ -91,6 +97,7 @@ const Sidebar = ({
           />
         </div>
 
+        {/* Add waypoint button */}
         <div className='w-full flex flex-col gap-2 mb-6 lg:mb-10'>
           <ActionButton
             disabled={origin == '' || destination == ''}
@@ -98,6 +105,8 @@ const Sidebar = ({
           >
             Add stop
           </ActionButton>
+
+          {/* Appends waypoints */}
           {wayPoints.map((el) => (
             <WayPoint
               key={el.id}
@@ -109,6 +118,7 @@ const Sidebar = ({
         </div>
 
         <div className='flex gap-2 items-center mb-4'>
+          {/* Travel mode input */}
           <Input
             type='select'
             id='travelMode'
@@ -119,6 +129,7 @@ const Sidebar = ({
         </div>
 
         <div className='flex items-center gap-2'>
+          {/* Get directions button */}
           <ActionButton
             disabled={origin == '' || destination == ''}
             handleClick={() => {
@@ -135,6 +146,8 @@ const Sidebar = ({
           >
             Calculate Route
           </ActionButton>
+
+          {/* Reset  */}
           <ClearButton
             onClear={clearRoute}
             disabled={origin == '' || destination == ''}

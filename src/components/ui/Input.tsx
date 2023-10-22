@@ -36,6 +36,7 @@ const Input = forwardRef(
           placeholder={placeholder}
           ref={ref as ForwardedRef<HTMLInputElement>}
           onPlaceSelected={(place) => {
+            // Sync origin and destination states with Autocomplete input refs
             handleSetState && handleSetState(place.formatted_address as string);
           }}
         />

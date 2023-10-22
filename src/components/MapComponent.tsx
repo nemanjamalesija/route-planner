@@ -8,17 +8,15 @@ type MapComponentProps = {
 };
 
 const MapComponent = ({ directionsResponse, setMap }: MapComponentProps) => {
-  const [currentCoordinates, setCurrentCoordinates] = useState(
-    {} as typeof fallbackCoords
-  );
+  const [currentCoordinates, setCurrentCoordinates] = useState(fallbackCoords);
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setCurrentCoordinates(fallbackCoords);
       console.log('Geolocation is not available on this device.');
       return;
     }
 
+    // Get user's current coordinates
     navigator.geolocation.getCurrentPosition(function (position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
@@ -41,6 +39,7 @@ const MapComponent = ({ directionsResponse, setMap }: MapComponentProps) => {
         }}
         onLoad={(map) => setMap(map)}
       >
+        {/* Marks user's current location or fallback coordinates */}
         <Marker
           position={currentCoordinates}
           animation={window.google.maps.Animation.BOUNCE}

@@ -13,11 +13,13 @@ export default async function fetchDirections(
   setDuration: React.Dispatch<React.SetStateAction<string>>
 ) {
   try {
+    // Fetch geocode information for the origin and destination
     const [originResults, destinationResults] = await Promise.all([
       getGeocode({ address: origin }),
       getGeocode({ address: destination }),
     ]);
 
+    // Extract latitude and longitude from the geocode results
     const [originLocation, destinationLocation] = await Promise.all([
       getLatLng(originResults[0]),
       getLatLng(destinationResults[0]),
@@ -31,6 +33,7 @@ export default async function fetchDirections(
       })
     );
 
+    // Create a DirectionsService object to interact with Google Maps Directions API.
     const directionsService = new google.maps.DirectionsService();
 
     const results = await directionsService.route({
@@ -41,7 +44,6 @@ export default async function fetchDirections(
     });
 
     if (!results) {
-      console.log('aaa');
       return;
     }
 
@@ -49,8 +51,6 @@ export default async function fetchDirections(
     const duration = results?.routes[0]?.legs[0]?.duration?.text;
 
     if (!distance || !duration) return;
-
-    console.log(results);
 
     setDirectionsResponse(results);
     setDistance(distance);
