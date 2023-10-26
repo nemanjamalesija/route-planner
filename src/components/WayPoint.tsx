@@ -16,7 +16,10 @@ const WayPoint = ({
   const wayPoint = useRef<HTMLInputElement | null>(null);
 
   // Updates waypoints in the <Sidebar />
-  function handleUpdateWaypoints(id: string, adress: string) {
+  function handleUpdateWaypoints(
+    id: string,
+    adress: string
+  ) {
     onUpdateWayPoints(id, adress);
   }
 
@@ -27,10 +30,17 @@ const WayPoint = ({
         apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
         ref={wayPoint}
         onPlaceSelected={(place) => {
-          handleUpdateWaypoints(id, place.formatted_address as string);
+          place?.formatted_address &&
+            handleUpdateWaypoints(
+              id,
+              place.formatted_address as string
+            );
         }}
       />
-      <button aria-label='center back' className='absolute top-4 right-2'>
+      <button
+        aria-label='center back'
+        className='absolute top-4 right-2'
+      >
         <FaTimes
           color='#020617'
           size='16px'

@@ -7,8 +7,12 @@ type InputPropsType = {
   placeholder: string;
   ref?: ForwardedRef<HTMLInputElement>;
   value?: string;
-  handleOnChange?: React.Dispatch<React.SetStateAction<'DRIVING' | 'WALKING'>>;
-  handleSetState?: React.Dispatch<React.SetStateAction<string>>;
+  handleOnChange?: React.Dispatch<
+    React.SetStateAction<'DRIVING' | 'WALKING'>
+  >;
+  handleSetState?: React.Dispatch<
+    React.SetStateAction<string>
+  >;
 };
 
 const Input = forwardRef(
@@ -37,7 +41,11 @@ const Input = forwardRef(
           ref={ref as ForwardedRef<HTMLInputElement>}
           onPlaceSelected={(place) => {
             // Sync origin and destination states with Autocomplete input refs
-            handleSetState && handleSetState(place.formatted_address as string);
+            place?.formatted_address &&
+              handleSetState &&
+              handleSetState(
+                place.formatted_address as string
+              );
           }}
         />
       );
@@ -50,7 +58,9 @@ const Input = forwardRef(
           value={value}
           onChange={(e) =>
             handleOnChange &&
-            handleOnChange(e.target.value as 'DRIVING' | 'WALKING')
+            handleOnChange(
+              e.target.value as 'DRIVING' | 'WALKING'
+            )
           }
         >
           <option value='DRIVING'>Driving 🚗</option>
