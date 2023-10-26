@@ -54,13 +54,19 @@ export default async function fetchDirections(
       return;
     }
 
-    const route =
-      results?.routes[0]?.legs[
-        results?.routes[0]?.legs.length - 1
-      ];
+    // reduce to get distance and duration because the total route
+    // might be split between multiple waypoints
+    const distance = results?.routes[0]?.legs
+      .reduce((acc, el) => {
+        return acc + el!.distance!.value / 1000;
+      }, 0)
+      .toFixed(2);
 
-    const distance = route.distance?.text;
-    const duration = route.duration?.text;
+    const duration = results?.routes[0]?.legs
+      .reduce((acc, el) => {
+        return acc + el!.duration!.value / 60 / 60;
+      }, 0)
+      .toFixed(1);
 
     if (!distance || !duration) return;
 

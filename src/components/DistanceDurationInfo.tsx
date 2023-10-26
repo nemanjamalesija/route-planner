@@ -8,10 +8,10 @@ const DistanceDurationInfo = ({
   return (
     <div className='gap-2 flex flex-col mt-8'>
       <p className='text-base text-white'>
-        Distance to your location: {distance}
+        Distance to your location: {distance} km.
       </p>
       <p className='text-base text-white'>
-        Estimated travel duration: {duration}
+        Estimated travel duration: {duration} hours.
       </p>
     </div>
   );
