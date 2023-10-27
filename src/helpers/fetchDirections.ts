@@ -54,25 +54,32 @@ export default async function fetchDirections(
       return;
     }
 
+    const routes = results?.routes[0].legs;
+
     // reduce to get distance and duration because the total route
     // might be split between multiple waypoints
-    const distance = results?.routes[0]?.legs
-      .reduce((acc, el) => {
-        return acc + el!.distance!.value / 1000;
-      }, 0)
-      .toFixed(2);
+    const { distance, duration } = routes.reduce(
+      (acc, el) => {
+        const distanceValue = el.distance
+          ? el.distance.value / 1000
+          : 0;
+        const durationValue = el.duration
+          ? el.duration.value / 3600
+          : 0;
 
-    const duration = results?.routes[0]?.legs
-      .reduce((acc, el) => {
-        return acc + el!.duration!.value / 60 / 60;
-      }, 0)
-      .toFixed(1);
+        return {
+          distance: acc.distance + distanceValue,
+          duration: acc.duration + durationValue,
+        };
+      },
+      { distance: 0, duration: 0 }
+    );
 
     if (!distance || !duration) return;
 
     setDirectionsResponse(results);
-    setDistance(distance);
-    setDuration(duration);
+    setDistance(distance.toFixed(1));
+    setDuration(duration.toFixed(1));
   } catch (error) {
     toast.error(
       `No route could be found between ${origin} and ${destination}.`
