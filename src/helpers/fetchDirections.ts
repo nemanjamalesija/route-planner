@@ -75,8 +75,6 @@ export default async function fetchDirections(
       { distance: 0, duration: 0 }
     );
 
-    if (!distance || !duration) return;
-
     setDirectionsResponse(results);
     setDistance(distance.toFixed(1));
     setDuration(duration.toFixed(1));
